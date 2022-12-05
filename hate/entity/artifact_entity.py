@@ -10,3 +10,12 @@ class DataIngestionArtifacts:
 @dataclass
 class DataTransformationArtifacts:
     transformed_data_path: str
+
+@dataclass
+class ModelTrainerArtifacts: 
+    trained_model_path:str
+
+# Model evaluation artifacts
+@dataclass
+class ModelEvaluationArtifacts:
+    is_model_accepted: bool    
