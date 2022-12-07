@@ -3,6 +3,7 @@ import sys
 import pickle
 import pandas as pd
 from hate.logger import logging
+from hate.constants import *
 from hate.exception import CustomException
 from sklearn.model_selection import train_test_split
 from keras.preprocessing.text import Tokenizer
@@ -25,11 +26,11 @@ class ModelTrainer:
             logging.info("Reading the data")
             df = pd.read_csv(csv_path)
             logging.info("Splitting the data into x and y")
-            x = df[self.model_trainer_config.TWEET]
-            y = df[self.model_trainer_config.LABEL]
+            x = df[TWEET]
+            y = df[LABEL]
 
             logging.info("Applying train_test_split on the data")
-            x_train,x_test,y_train,y_test = train_test_split(x,y, random_state = 42)
+            x_train,x_test,y_train,y_test = train_test_split(x,y, test_size=0.3,random_state = 42)
             print(len(x_train),len(y_train))
             print(len(x_test),len(y_test))
 
@@ -63,9 +64,13 @@ class ModelTrainer:
         try:
             x_train,x_test,y_train,y_test = self.spliting_data(csv_path=self.data_transformation_artifacts.transformed_data_path)
 
+            logging.info(f"Xtrain size is : {x_train.shape}")
+
+            logging.info(f"Xtest size is : {x_test.shape}")
+
             sequences_matrix,tokenizer =self.tokenizing(x_train)
 
-            model_architecture = ModelArchitecture(model_trainer_config = self.model_trainer_config)
+            model_architecture = ModelArchitecture()
 
             model = model_architecture.get_model()
         

@@ -11,6 +11,7 @@ BUCKET_NAME = 'hate-speech'
 ZIP_FILE_NAME = 'dataset.zip'
 LABEL = 'label'
 TWEET = 'tweet'
+MODEL_NAME = 'model.h5'
 
 # Data ingestion constants
 DATA_INGESTION_ARTIFACTS_DIR = "DataIngestionArtifacts"

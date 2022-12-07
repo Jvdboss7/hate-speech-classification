@@ -133,3 +133,8 @@ notebook/model.h5
 notebook/tokenizer.pickle
 artifacts/
 logs/
+tokenizer.pickle 
+train.csv
+test.csv
+test.py
+
