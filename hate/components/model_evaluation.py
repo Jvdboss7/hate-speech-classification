@@ -3,6 +3,7 @@ import sys
 import keras
 import pickle
 import numpy as np
+import pandas as pd
 from hate.logger import logging
 from hate.exception import CustomException
 from keras.utils import pad_sequences
@@ -11,10 +12,9 @@ from hate.ml.model import ModelArchitecture
 from hate.configuration.gcloud_syncer import GCloudSync
 from keras.preprocessing.text import Tokenizer
 from sklearn.metrics import confusion_matrix
-from hate.entity.config_entity import ModelEvaluationConfig,ModelTrainerConfig
-from hate.components.model_trainer import ModelTrainer
+from hate.entity.config_entity import ModelEvaluationConfig
 from hate.entity.artifact_entity import ModelEvaluationArtifacts, ModelTrainerArtifacts, DataTransformationArtifacts
-from sklearn.model_selection import train_test_split
+
 
 
 class ModelEvaluation:
@@ -22,8 +22,8 @@ class ModelEvaluation:
                  model_trainer_artifacts: ModelTrainerArtifacts,
                  data_transformation_artifacts: DataTransformationArtifacts):
         """
-        :param model_evaluation_config: Configuration for model evaluation
-        :param data_transformation_artifacts: Output reference of data transformation artifact stage
+        :param model_evaluation_config: Configuration for model eva            model = model_architecture.get_model()
+ data transformation artifact stage
         :param model_trainer_artifacts: Output reference of model trainer artifact stage
         """
 
@@ -31,7 +31,6 @@ class ModelEvaluation:
         self.model_trainer_artifacts = model_trainer_artifacts
         self.data_transformation_artifacts = data_transformation_artifacts
         self.gcloud = GCloudSync()
-        self.model_trainer = ModelTrainer(data_transformation_artifacts = DataTransformationArtifacts,model_trainer_config =  ModelTrainerConfig)
 
     def get_best_model_from_gcloud(self) -> str:
         """
@@ -62,16 +61,20 @@ class ModelEvaluation:
         """
         try:
             logging.info("Entering into to the evaluate function of Model Evaluation class")
-            df = pd.read_csv()
-            _,x_test,_,y_test = train_test_split()
+
+            x_test = pd.read_csv(self.model_trainer_artifacts.x_test_file_path, index_col=False)
+            y_test = pd.read_csv(self.model_trainer_artifacts.y_test_file_path,index_col=False)
+            # y_test = y_test.values.reshape(-1,-1)
             tokenizer = Tokenizer(num_words=MAX_WORDS)
             test_sequences = tokenizer.texts_to_sequences(x_test)
             test_sequences_matrix = pad_sequences(test_sequences,maxlen=MAX_LEN)
+            print(f"----------{test_sequences_matrix}------------------")
 
             model_architecture = ModelArchitecture()
             model = model_architecture.get_model()
-
-
+            print(f"-----------------{model}---------------------")
+            print(f"-----------------{x_test.shape}--------------")
+            print(f"-----------------{y_test.shape}--------------")
             accuracy = model.evaluate(test_sequences_matrix,y_test)
             logging.info(f"the test accuracy is {accuracy}")
 

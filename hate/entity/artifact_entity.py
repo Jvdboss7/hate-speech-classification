@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 # Data ingestion artifacts
 @dataclass
 class DataIngestionArtifacts:
@@ -14,6 +13,8 @@ class DataTransformationArtifacts:
 @dataclass
 class ModelTrainerArtifacts: 
     trained_model_path:str
+    x_test_file_path: str
+    y_test_file_path: str
 
 # Model evaluation artifacts
 @dataclass

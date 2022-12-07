@@ -24,7 +24,7 @@ class ModelTrainer:
     def spliting_data(self,csv_path):
         try:
             logging.info("Reading the data")
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(csv_path, index_col=False)
             logging.info("Splitting the data into x and y")
             x = df[TWEET]
             y = df[LABEL]
@@ -33,6 +33,7 @@ class ModelTrainer:
             x_train,x_test,y_train,y_test = train_test_split(x,y, test_size=0.3,random_state = 42)
             print(len(x_train),len(y_train))
             print(len(x_test),len(y_test))
+            print(type(x_train),type(y_train))
 
             return x_train,x_test,y_train,y_test
 
@@ -42,10 +43,14 @@ class ModelTrainer:
     def tokenizing(self,x_train):
         try:
             logging.info("Applying tokenization on the data")
+            print(x_train)
+            print(x_train.head())
             tokenizer = Tokenizer(num_words=self.model_trainer_config.MAX_WORDS)
             tokenizer.fit_on_texts(x_train)
             sequences = tokenizer.texts_to_sequences(x_train)
+            logging.info(f"converting text to sequences: {sequences}")
             sequences_matrix = pad_sequences(sequences,maxlen=self.model_trainer_config.MAX_LEN)
+            logging.info(f" The sequence matrix is: {sequences_matrix}")
             return sequences_matrix,tokenizer
         except Exception as e:
             raise CustomException(e, sys) from e
@@ -73,21 +78,28 @@ class ModelTrainer:
             model_architecture = ModelArchitecture()
 
             model = model_architecture.get_model()
-        
+
+            logging.info("Entered into model training")
             model.fit(sequences_matrix, y_train, 
                         batch_size=self.model_trainer_config.BATCH_SIZE, 
                         epochs = self.model_trainer_config.EPOCH, 
                         validation_split=self.model_trainer_config.VALIDATION_SPLIT, 
                         # callbacks=[model_architecture.early_stopping]
                         )
-
+            logging.info("Model training finished")
             with open('tokenizer.pickle', 'wb') as handle:
                 pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
             os.makedirs(self.model_trainer_config.TRAINED_MODEL_DIR,exist_ok=True)
 
+            logging.info("saving the model")
             model.save(self.model_trainer_config.TRAINED_MODEL_PATH)
+            x_test.to_csv(self.model_trainer_config.X_TEST_DATA_PATH)
+            y_test.to_csv(self.model_trainer_config.Y_TEST_DATA_PATH)
+
             model_trainer_artifacts = ModelTrainerArtifacts(
-                trained_model_path = self.model_trainer_config.TRAINED_MODEL_PATH
+                trained_model_path = self.model_trainer_config.TRAINED_MODEL_PATH,
+                x_test_file_path = self.model_trainer_config.X_TEST_DATA_PATH,
+                y_test_file_path = self.model_trainer_config.Y_TEST_DATA_PATH
             )
             return model_trainer_artifacts
 
