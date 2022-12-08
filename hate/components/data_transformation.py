@@ -97,9 +97,7 @@ class DataTransformation:
 
             os.makedirs(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, exist_ok=True)
             df.to_csv(self.data_transformation_config.TRANSFORMED_FILE_PATH,index=False,header=True)
-            # x = df[self.data_transformation_config.TWEET]
-            # y = df[self.data_transformation_config.LABEL]
-            # x_train,x_test,y_train,y_test = train_test_split(x,y, random_state = 42)
+
             data_transformation_artifact = DataTransformationArtifacts(
                 transformed_data_path = self.data_transformation_config.TRANSFORMED_FILE_PATH
             )
