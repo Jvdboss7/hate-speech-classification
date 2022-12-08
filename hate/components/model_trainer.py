@@ -43,8 +43,6 @@ class ModelTrainer:
     def tokenizing(self,x_train):
         try:
             logging.info("Applying tokenization on the data")
-            print(x_train)
-            print(x_train.head())
             tokenizer = Tokenizer(num_words=self.model_trainer_config.MAX_WORDS)
             tokenizer.fit_on_texts(x_train)
             sequences = tokenizer.texts_to_sequences(x_train)
@@ -54,6 +52,8 @@ class ModelTrainer:
             return sequences_matrix,tokenizer
         except Exception as e:
             raise CustomException(e, sys) from e
+
+
 
     def initiate_model_trainer(self,) -> ModelTrainerArtifacts:
         logging.info("Entered initiate_model_trainer method of ModelTrainer class")
@@ -68,6 +68,11 @@ class ModelTrainer:
 
         try:
             x_train,x_test,y_train,y_test = self.spliting_data(csv_path=self.data_transformation_artifacts.transformed_data_path)
+            model_architecture = ModelArchitecture()   
+
+            model = model_architecture.get_model()
+
+
 
             logging.info(f"Xtrain size is : {x_train.shape}")
 
@@ -75,9 +80,6 @@ class ModelTrainer:
 
             sequences_matrix,tokenizer =self.tokenizing(x_train)
 
-            model_architecture = ModelArchitecture()
-
-            model = model_architecture.get_model()
 
             logging.info("Entered into model training")
             model.fit(sequences_matrix, y_train, 
@@ -91,16 +93,19 @@ class ModelTrainer:
                 pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
             os.makedirs(self.model_trainer_config.TRAINED_MODEL_DIR,exist_ok=True)
 
+
+
             logging.info("saving the model")
             model.save(self.model_trainer_config.TRAINED_MODEL_PATH)
             x_test.to_csv(self.model_trainer_config.X_TEST_DATA_PATH)
             y_test.to_csv(self.model_trainer_config.Y_TEST_DATA_PATH)
 
+            x_train.to_csv(self.model_trainer_config.X_TRAIN_DATA_PATH)
+
             model_trainer_artifacts = ModelTrainerArtifacts(
                 trained_model_path = self.model_trainer_config.TRAINED_MODEL_PATH,
-                x_test_file_path = self.model_trainer_config.X_TEST_DATA_PATH,
-                y_test_file_path = self.model_trainer_config.Y_TEST_DATA_PATH
-            )
+                x_test_path = self.model_trainer_config.X_TEST_DATA_PATH,
+                y_test_path = self.model_trainer_config.Y_TEST_DATA_PATH)
             return model_trainer_artifacts
 
         except Exception as e:

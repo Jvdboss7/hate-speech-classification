@@ -33,6 +33,9 @@ class ModelTrainerConfig:
         self.TRAINED_MODEL_PATH = os.path.join(self.TRAINED_MODEL_DIR,TRAINED_MODEL_NAME)
         self.X_TEST_DATA_PATH = os.path.join(self.TRAINED_MODEL_DIR, X_TEST_FILE_NAME)
         self.Y_TEST_DATA_PATH = os.path.join(self.TRAINED_MODEL_DIR, Y_TEST_FILE_NAME)
+
+        self.X_TRAIN_DATA_PATH = os.path.join(self.TRAINED_MODEL_DIR, X_TRAIN_FILE_NAME)
+
         self.MAX_WORDS = MAX_WORDS
         self.MAX_LEN = MAX_LEN
         self.LOSS = LOSS
@@ -53,3 +56,11 @@ class ModelEvaluationConfig:
         self.BUCKET_NAME = BUCKET_NAME 
         self.MODEL_NAME = MODEL_NAME 
     
+
+@dataclass
+class ModelPusherConfig:
+
+    def __init__(self):
+        self.TRAINED_MODEL_PATH = os.path.join(os.getcwd(),ARTIFACTS_DIR, MODEL_TRAINER_ARTIFACTS_DIR)
+        self.BUCKET_NAME = BUCKET_NAME
+        self.MODEL_NAME = MODEL_NAME

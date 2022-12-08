@@ -8,9 +8,9 @@ from hate.logger import logging
 from hate.exception import CustomException
 from keras.utils import pad_sequences
 from hate.constants import *
-from hate.ml.model import ModelArchitecture
+# from hate.ml.model import ModelArchitecture
 from hate.configuration.gcloud_syncer import GCloudSync
-from keras.preprocessing.text import Tokenizer
+# from keras.preprocessing.text import Tokenizer
 from sklearn.metrics import confusion_matrix
 from hate.entity.config_entity import ModelEvaluationConfig
 from hate.entity.artifact_entity import ModelEvaluationArtifacts, ModelTrainerArtifacts, DataTransformationArtifacts
@@ -61,24 +61,32 @@ class ModelEvaluation:
         """
         try:
             logging.info("Entering into to the evaluate function of Model Evaluation class")
+            print(self.model_trainer_artifacts.x_test_path)
 
-            x_test = pd.read_csv(self.model_trainer_artifacts.x_test_file_path, index_col=False)
-            y_test = pd.read_csv(self.model_trainer_artifacts.y_test_file_path,index_col=False)
-            # y_test = y_test.values.reshape(-1,-1)
-            tokenizer = Tokenizer(num_words=MAX_WORDS)
+            x_test = pd.read_csv(self.model_trainer_artifacts.x_test_path,index_col=0)
+            print(x_test)
+            y_test = pd.read_csv(self.model_trainer_artifacts.y_test_path,index_col=0)
+
+            with open('tokenizer.pickle', 'rb') as handle:
+                tokenizer = pickle.load(handle)
+
+            load_model=keras.models.load_model(self.model_trainer_artifacts.trained_model_path)
+
+            x_test = x_test['tweet'].astype(str)
+
+            x_test = x_test.squeeze()
+            y_test = y_test.squeeze()
+
             test_sequences = tokenizer.texts_to_sequences(x_test)
             test_sequences_matrix = pad_sequences(test_sequences,maxlen=MAX_LEN)
             print(f"----------{test_sequences_matrix}------------------")
 
-            model_architecture = ModelArchitecture()
-            model = model_architecture.get_model()
-            print(f"-----------------{model}---------------------")
             print(f"-----------------{x_test.shape}--------------")
             print(f"-----------------{y_test.shape}--------------")
-            accuracy = model.evaluate(test_sequences_matrix,y_test)
+            accuracy = load_model.evaluate(test_sequences_matrix,y_test)
             logging.info(f"the test accuracy is {accuracy}")
 
-            lstm_prediction = model.predict(test_sequences_matrix)
+            lstm_prediction = load_model.predict(test_sequences_matrix)
             res = []
             for prediction in lstm_prediction:
                 if prediction[0] < 0.5:
