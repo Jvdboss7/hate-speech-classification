@@ -1,7 +1,12 @@
-from hate.pipeline.train_pipeline import TrainPipeline
+# from hate.pipeline.train_pipeline import TrainPipeline
+
+# if __name__ == "__main__":
+#     TrainPipeline().run_pipeline()
+
+from hate.pipeline.prediction_pipeline import PredictionPipeline
 
 if __name__ == "__main__":
-    TrainPipeline().run_pipeline()
+    PredictionPipeline().run_pipeline(text="you are good")
 
 # import pandas as pd
 

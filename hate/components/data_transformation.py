@@ -79,7 +79,7 @@ class DataTransformation:
             words = re.sub('\w*\d\w*', '', words)
             words = [word for word in words.split(' ') if words not in stopword]
             words=" ".join(words)
-            words = [stemmer.stem(words) for word in words.split(' ')]
+            words = [stemmer.stem(word) for word in words.split(' ')]
             words=" ".join(words)
 
             return words 

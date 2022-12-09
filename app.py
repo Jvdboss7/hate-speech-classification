@@ -5,6 +5,7 @@ import sys
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from fastapi.responses import Response
+from hate.pipeline.prediction_pipeline import PredictionPipeline
 # from text_generation.ml.model.prediction import TextGenerator
 from hate.exception import CustomException
 
@@ -19,15 +20,16 @@ async def index():
     return RedirectResponse(url="/docs")
 
 @app.get("/train")
-async def train_route():
+async def training():
     try:
         train_pipeline = TrainPipeline()
-        if train_pipeline.is_pipeline_running:
-            return Response("Training pipeline is already running.")
+
         train_pipeline.run_pipeline()
+
         return Response("Training successful !!")
+
     except Exception as e:
-        raise CustomException(e, sys) from e
+        return Response(f"Error Occurred! {e}")
 
 
 @app.post("/predict")
@@ -39,9 +41,11 @@ async def predict_route(text):
         # aws_buket_url = f"s3://{TRAINING_BUCKET_NAME}/{SAVED_MODEL_DIR}"
         # s3_sync.sync_folder_from_s3(folder = SAVED_MODEL_DIR,aws_bucket_url=aws_buket_url)
         # logging.info("Model downloading completed")
-        obj= TextGenerator()
-        generated_text = obj.prediction(text)
-        return generated_text
+        # obj= TextGenerator()
+        # generated_text = obj.prediction(text)
+        obj = PredictionPipeline()
+        text = obj.run_pipeline(text)
+        return text
     except Exception as e:
         raise CustomException(e, sys) from e
 

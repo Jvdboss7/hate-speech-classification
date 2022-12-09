@@ -10,6 +10,8 @@ from hate.exception import CustomException
 from keras.utils import pad_sequences
 from hate.configuration.gcloud_syncer import GCloudSync
 from hate.components.data_transformation import DataTransformation
+from hate.entity.config_entity import DataTransformationConfig
+from hate.entity.artifact_entity import DataIngestionArtifacts
 
 class PredictionPipeline:
     def __init__(self):
@@ -17,7 +19,7 @@ class PredictionPipeline:
         self.model_name = MODEL_NAME
         self.model_path = os.path.join("artifacts", "PredictModel")
         self.gcloud = GCloudSync()
-        self.data_transformation = DataTransformation()
+        self.data_transformation = DataTransformation(data_transformation_config= DataTransformationConfig,data_ingestion_artifacts=DataIngestionArtifacts)
 
 
 
@@ -40,54 +42,41 @@ class PredictionPipeline:
         except Exception as e:
             raise CustomException(e, sys) from e
 
-    def predict(self, best_model_path,test):
+    def predict(self, best_model_path,text):
         """load image, returns cuda tensor"""
-        logging.info("Entered the image_loader method of PredictionPipeline class")
+        logging.info("Running the predict function")
         try:
             load_model=keras.models.load_model(best_model_path)
             with open('tokenizer.pickle', 'rb') as handle:
                 load_tokenizer = pickle.load(handle)
             
-            test=self.data_transformation.concat_data_cleaning(test)            
-            print(test)
-            seq = load_tokenizer.texts_to_sequences(test)
+            text=self.data_transformation.concat_data_cleaning(text)
+            text = [text]            
+            print(text)
+            seq = load_tokenizer.texts_to_sequences(text)
             padded = pad_sequences(seq, maxlen=300)
             print(seq)
             pred = load_model.predict(padded)
+            pred
             print("pred", pred)
-            if pred<0.5:
-                print("no hate")
-                return "no hate"
-            else:
+            if pred>0.4:
+
                 print("hate and abusive")
                 return "hate and abusive"
-
+            else:
+                print("no hate")
+                return "no hate"
         except Exception as e:
             raise CustomException(e, sys) from e
 
 
-    # def prediction(self, best_model_path: str, image) -> float:
-    #     logging.info("Entered the prediction method of PredictionPipeline class")
-    #     try:
-    #         model = torch.load(best_model_path, map_location=torch.device("cpu"))
-    #         logits = model.predict(image.unsqueeze(0))
-    #         pred_text = model.decode(logits.cpu())
-    #         return pred_text
-    #         pred = load_model.predict(padded)
-    #         print("pred", pred)
-    #         if pred<0.5:
-    #             print("no hate")
-    #         else:
-    #             print("hate and abusive")
-    #     except Exception as e:
-    #         raise CustomException(e, sys) from e
 
-    def run_pipeline(self, data):
+    def run_pipeline(self,text):
         logging.info("Entered the run_pipeline method of PredictionPipeline class")
         try:
 
             best_model_path: str = self.get_model_from_gcloud()
-            predicted_text = self.predict(best_model_path,test)
+            predicted_text = self.predict(best_model_path,text)
             logging.info("Exited the run_pipeline method of PredictionPipeline class")
             return predicted_text
         except Exception as e:
