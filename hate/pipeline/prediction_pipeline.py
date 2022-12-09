@@ -42,10 +42,11 @@ class PredictionPipeline:
         except Exception as e:
             raise CustomException(e, sys) from e
 
-    def predict(self, best_model_path,text):
+    def predict(self,best_model_path,text):
         """load image, returns cuda tensor"""
         logging.info("Running the predict function")
         try:
+            best_model_path:str = self.get_model_from_gcloud()
             load_model=keras.models.load_model(best_model_path)
             with open('tokenizer.pickle', 'rb') as handle:
                 load_tokenizer = pickle.load(handle)
@@ -75,7 +76,7 @@ class PredictionPipeline:
         logging.info("Entered the run_pipeline method of PredictionPipeline class")
         try:
 
-            best_model_path: str = self.get_model_from_gcloud()
+            best_model_path: str = self.get_model_from_gcloud() 
             predicted_text = self.predict(best_model_path,text)
             logging.info("Exited the run_pipeline method of PredictionPipeline class")
             return predicted_text

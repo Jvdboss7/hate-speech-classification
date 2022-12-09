@@ -6,14 +6,12 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from fastapi.responses import Response
 from hate.pipeline.prediction_pipeline import PredictionPipeline
-# from text_generation.ml.model.prediction import TextGenerator
 from hate.exception import CustomException
-
+from hate.constants import *
 
 text:str = "What is machine learing?"
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 
 @app.get("/", tags=["authentication"])
 async def index():
@@ -35,14 +33,7 @@ async def training():
 @app.post("/predict")
 async def predict_route(text):
     try:
-        # logging.info("Downloading model from s3 bucket")
-        # os.makedirs(SAVED_MODEL_DIR, exist_ok=True)
-        # s3_sync = s3sync()
-        # aws_buket_url = f"s3://{TRAINING_BUCKET_NAME}/{SAVED_MODEL_DIR}"
-        # s3_sync.sync_folder_from_s3(folder = SAVED_MODEL_DIR,aws_bucket_url=aws_buket_url)
-        # logging.info("Model downloading completed")
-        # obj= TextGenerator()
-        # generated_text = obj.prediction(text)
+
         obj = PredictionPipeline()
         text = obj.run_pipeline(text)
         return text
@@ -50,4 +41,4 @@ async def predict_route(text):
         raise CustomException(e, sys) from e
 
 if __name__=="__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=APP_HOST, port=APP_PORT)

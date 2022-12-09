@@ -12,6 +12,8 @@ ZIP_FILE_NAME = 'dataset.zip'
 LABEL = 'label'
 TWEET = 'tweet'
 MODEL_NAME = 'model.h5'
+APP_HOST = "0.0.0.0"
+APP_PORT = 8080
 
 # Data ingestion constants
 DATA_INGESTION_ARTIFACTS_DIR = "DataIngestionArtifacts"
