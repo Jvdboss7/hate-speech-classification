@@ -132,8 +132,7 @@ dmypy.json
 notebook/model.h5
 notebook/tokenizer.pickle
 artifacts/
-logs/
-tokenizer.pickle 
+logs/ 
 train.csv
 test.csv
 test.py
