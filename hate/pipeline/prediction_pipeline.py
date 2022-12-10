@@ -60,7 +60,7 @@ class PredictionPipeline:
             pred = load_model.predict(padded)
             pred
             print("pred", pred)
-            if pred>0.4:
+            if pred>0.3:
 
                 print("hate and abusive")
                 return "hate and abusive"
