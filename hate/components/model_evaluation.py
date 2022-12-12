@@ -50,7 +50,7 @@ class ModelEvaluation:
             logging.info("Exited the get_best_model_from_gcloud method of Model Evaluation class")
             return best_model_path
         except Exception as e:
-            raise CustomException(e, sys) from e
+            raise CustomException(e, sys) from e 
 
     def evaluate(self):
         """
@@ -94,7 +94,7 @@ class ModelEvaluation:
                 else:
                     res.append(1)
             print(confusion_matrix(y_test,res))
-            
+            logging.info(f"the confusion_matrix is {confusion_matrix(y_test,res)} ")
             return accuracy
         except Exception as e:
             raise CustomException(e, sys) from e
@@ -109,8 +109,6 @@ class ModelEvaluation:
         """
         logging.info("Initiate Model Evaluation")
         try:
-            logging.info("Loading validation data for model evaluation")
-
 
             logging.info("Loading currently trained model")
             trained_model=keras.models.load_model(self.model_trainer_artifacts.trained_model_path)
@@ -141,6 +139,7 @@ class ModelEvaluation:
                     logging.info("Trained model accepted")
 
             model_evaluation_artifacts = ModelEvaluationArtifacts(is_model_accepted=is_model_accepted)
+            logging.info("Returning the ModelEvaluationArtifacts")
             return model_evaluation_artifacts
 
         except Exception as e:

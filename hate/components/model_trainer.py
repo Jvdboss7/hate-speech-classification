@@ -23,6 +23,7 @@ class ModelTrainer:
 
     def spliting_data(self,csv_path):
         try:
+            logging.info("Entered the spliting_data function")
             logging.info("Reading the data")
             df = pd.read_csv(csv_path, index_col=False)
             logging.info("Splitting the data into x and y")
@@ -34,7 +35,7 @@ class ModelTrainer:
             print(len(x_train),len(y_train))
             print(len(x_test),len(y_test))
             print(type(x_train),type(y_train))
-
+            logging.info("Exited the spliting the data function")
             return x_train,x_test,y_train,y_test
 
         except Exception as e:
@@ -67,6 +68,7 @@ class ModelTrainer:
         """
 
         try:
+            logging.info("Entered the initiate_model_trainer function ")
             x_train,x_test,y_train,y_test = self.spliting_data(csv_path=self.data_transformation_artifacts.transformed_data_path)
             model_architecture = ModelArchitecture()   
 
@@ -86,7 +88,6 @@ class ModelTrainer:
                         batch_size=self.model_trainer_config.BATCH_SIZE, 
                         epochs = self.model_trainer_config.EPOCH, 
                         validation_split=self.model_trainer_config.VALIDATION_SPLIT, 
-                        # callbacks=[model_architecture.early_stopping]
                         )
             logging.info("Model training finished")
             with open('tokenizer.pickle', 'wb') as handle:
@@ -106,6 +107,7 @@ class ModelTrainer:
                 trained_model_path = self.model_trainer_config.TRAINED_MODEL_PATH,
                 x_test_path = self.model_trainer_config.X_TEST_DATA_PATH,
                 y_test_path = self.model_trainer_config.Y_TEST_DATA_PATH)
+            logging.info("Returning the ModelTrainerArtifacts")
             return model_trainer_artifacts
 
         except Exception as e:
