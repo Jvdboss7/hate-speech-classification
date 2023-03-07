@@ -21,8 +21,8 @@ jobs:
       - image: google/cloud-sdk
     resource_class: medium
     environment:
-      REPOSITORY: hate-speech-classification
-      IMAGE_NAME: hate-speech-classification
+      REPOSITORY: hate-speech
+      IMAGE_NAME: hate-speech
       IMAGE_TAG: latest
     steps:
       - checkout
@@ -50,10 +50,10 @@ jobs:
 
   continuous-deployment:
     machine: true
-    resource_class: deep-learning-01/dl-ineuron
+    resource_class: jvdboss7/self-hosted
     environment:
-      REPOSITORY: hate-speech-classification
-      GAR_IMAGE_NAME: hate-speech-classification
+      REPOSITORY: hate-speech
+      GAR_IMAGE_NAME: hate-speech
       IMAGE_TAG: latest
     steps:
       - checkout
